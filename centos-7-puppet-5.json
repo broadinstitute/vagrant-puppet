@@ -1,0 +1,23 @@
+{
+  "builders": [{
+    "type": "vagrant",
+    "add_force": true,
+    "box_name": "centos-7-puppet-5",
+    "communicator": "ssh",
+    "provider": "virtualbox",
+    "source_path": "broadinstitute/centos-7-1810-x86_64"
+  }],
+  "provisioners": [
+    {
+      "type": "shell",
+      "execute_command": "echo 'vagrant' | {{.Vars}} sudo -S -E bash '{{.Path}}'",
+      "scripts": [
+        "scripts/centos7/base.sh",
+        "scripts/gpg.sh",
+        "scripts/rvm.sh",
+        "scripts/centos7/ruby.sh",
+        "scripts/centos7/puppet5.sh"
+      ]
+    }
+  ]
+}
