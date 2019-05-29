@@ -89,6 +89,7 @@ class VagrantAPI(object):
                 "version": version,
             }
         }
+        # TODO: Add a description in data
         result = self.__session.post(url, json=data)
 
         try:
@@ -141,8 +142,9 @@ class VagrantAPI(object):
         """Perform a PUT to the upload_url with the box file to upload the box."""
         files = {"file": open("output-vagrant/package.box", "rb")}
 
-        result = requests.post(upload_url, files=files)
-
+        result = requests.put(upload_url, files=files)
+        # This might just work but it returns a requests.exceptions.ConnectionError with .put
+        # No idea...
         try:
             result.raise_for_status()
         except requests.HTTPError as exc:
@@ -155,7 +157,7 @@ class VagrantAPI(object):
     def release_version(self, user, box_name, version):
         """Call the Vagrant API to release the version."""
         url = os.path.join(self.BASE_URL, "box/%s/%s/version/%s/release" % (user, box_name, version))
-        result = self.__session.get(url)
+        result = self.__session.put(url)
 
         try:
             result.raise_for_status()
@@ -164,11 +166,7 @@ class VagrantAPI(object):
             if exc.response.status_code != 422:
                 raise exc
 
-        data = result.json()
-        if "upload_path" not in data:
-            raise Exception("upload_path does not exist in returned data")
-
-        return data["upload_path"]
+        return result
 
 
 def main():
@@ -185,8 +183,9 @@ def main():
     try:
         result5 = vagrant.upload_box(upload_url)
     except Exception as exc:
-        pdb.set_trace()
-        return 1
+        # Ignore for now...???
+        pass
+    result4 = vagrant.release_version("broadinstitute", args.box_name, args.version)
 
     return 0
 
