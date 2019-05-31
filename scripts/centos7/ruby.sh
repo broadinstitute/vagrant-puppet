@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+export PUPPET_GEM_VERSION='< 6.0.0'
+
 # shellcheck source=/dev/null
 source /etc/profile.d/rvm.sh
 
